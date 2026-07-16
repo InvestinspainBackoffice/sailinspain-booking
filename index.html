@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sail in Spain — Book your Trip</title>
+  <meta property="og:title" content="Sail in Spain — Book your Trip">
+  <meta property="og:description" content="Book your private catamaran charter along the Spanish coast.">
+  <meta property="og:image" content="https://rentacatamaran.net/wp-content/uploads/2026/06/IMG_0006-Topaz-Gigapixel-4x-schalen01-scaled.jpg">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:      #2d4a5a;
+      --navy-d:    #1a3344;
+      --teal:      #3a7085;
+      --gold:      #c9a84c;
+      --gold-l:    #b8952e;
+      --white:     #ffffff;
+      --bg:        #f4f6f8;
+      --card:      #ffffff;
+      --border:    #d8dfe6;
+      --text:      #2c3e50;
+      --text-m:    #5a6c7d;
+      --input-bg:  #f8f9fb;
+      --radius:    8px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    /* ── Top bar ── */
+    .topbar {
+      background: var(--navy-d);
+      padding: 8px 1.25rem;
+      font-size: 13px;
+      color: rgba(255,255,255,0.8);
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+    .topbar a { color: rgba(255,255,255,0.8); text-decoration: none; }
+    .topbar a:hover { color: #fff; }
+    .topbar i { margin-right: 5px; font-size: 11px; }
+
+    /* ── Header ── */
+    .header {
+      background: transparent;
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 10;
+    }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .logo-mark {
+      height: 50px;
+      flex-shrink: 0;
+    }
+    .logo-mark img { height: 100%; width: auto; }
+    .header h1 { font-size: 16px; font-weight: 600; color: var(--white); letter-spacing: 0.02em; }
+
+    .nav { display: flex; gap: 20px; align-items: center; }
+    .nav a {
+      color: rgba(255,255,255,0.8);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.15s;
+    }
+    .nav a:hover { color: #fff; }
+    .nav .btn-book {
+      background: var(--teal);
+      color: #fff;
+      padding: 8px 18px;
+      border-radius: var(--radius);
+      font-weight: 600;
+      transition: background 0.15s;
+    }
+    .nav .btn-book:hover { background: #2e5d70; }
+
+    @media (max-width: 700px) {
+      .nav { display: none; }
+    }
+
+    /* ── Hero ── */
+    .hero {
+      background: linear-gradient(rgba(26,51,68,0.6), rgba(45,74,90,0.7)),
+                  url('https://rentacatamaran.net/wp-content/uploads/2020/10/Sailinspain-marbella-estepona-sotogrande-catamaran-for-rent-with-captain-1.jpg')
+                  center/cover no-repeat;
+      padding: 7rem 1.25rem 5rem;
+      text-align: center;
+      color: var(--white);
+    }
+    .hero-sub {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+    .hero h2 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .hero p {
+      font-size: 14px;
+      color: rgba(255,255,255,0.7);
+    }
+
+    /* ── Contact cards ── */
+    .contact-bar {
+      background: var(--navy);
+      padding: 2rem 1.25rem;
+      display: flex;
+      justify-content: center;
+      gap: 3rem;
+      flex-wrap: wrap;
+    }
+    .contact-card {
+      text-align: center;
+      color: var(--white);
+    }
+    .contact-card h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .contact-card p {
+      font-size: 13px;
+      color: rgba(255,255,255,0.6);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    /* ── Body ── */
+    .body {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 2rem 1rem 3rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ── Section ── */
+    .section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+    .section-head {
+      padding: 0.75rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg);
+    }
+    .section-head i { color: var(--navy); font-size: 14px; }
+    .section-head span {
+      font-size: 11px; font-weight: 700;
+      color: var(--navy);
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+    .section-body {
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* ── Grid ── */
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+    @media (max-width: 600px) {
+      .row2, .row3 { grid-template-columns: 1fr; }
+    }
+
+    /* ── Fields ── */
+    .field label {
+      font-size: 13px;
+      color: var(--text-m);
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+    .field label .req { color: #e74c3c; margin-left: 2px; }
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 12px;
+      font-size: 14px;
+      color: var(--text);
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.15s;
+      -webkit-appearance: none;
+    }
+    .field input:focus,
+    .field textarea:focus,
+    .field select:focus { border-color: var(--navy); box-shadow: 0 0 0 2px rgba(45,74,90,0.12); }
+    .field select { cursor: pointer; }
+    .field textarea { resize: vertical; min-height: 80px; }
+    .field .char-count {
+      font-size: 11px;
+      color: var(--text-m);
+      text-align: right;
+      margin-top: 3px;
+    }
+
+    /* ── Checkboxes ── */
+    .check-group { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 2px; }
+    .check-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: var(--text);
+      cursor: pointer;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .check-item input[type="checkbox"],
+    .check-item input[type="radio"] {
+      width: 18px; height: 18px;
+      border: 1.5px solid var(--border);
+      border-radius: 3px;
+      background: var(--white);
+      cursor: pointer;
+      -webkit-appearance: none;
+      appearance: none;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .check-item input[type="radio"] { border-radius: 50%; }
+    .check-item input:checked {
+      background: var(--navy);
+      border-color: var(--navy);
+    }
+    .check-item input[type="checkbox"]:checked::after {
+      content: '✓';
+      color: white;
+      font-size: 12px;
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .check-item input[type="radio"]:checked::after {
+      content: '';
+      width: 8px; height: 8px;
+      background: white;
+      border-radius: 50%;
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    /* ── Button ── */
+    .btn-submit {
+      width: 100%;
+      padding: 14px;
+      font-size: 15px;
+      font-weight: 600;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      letter-spacing: 0.02em;
+      transition: background 0.15s, transform 0.1s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: var(--navy);
+      color: var(--white);
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-submit:hover { background: var(--navy-d); }
+    .btn-submit:active { transform: scale(0.98); }
+    .btn-submit:disabled { background: #aab; cursor: not-allowed; opacity: 0.7; }
+
+    /* ── Status ── */
+    .submit-status {
+      text-align: center;
+      padding: 12px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      display: none;
+    }
+    .submit-status.success {
+      background: rgba(46,204,113,0.1);
+      border: 1px solid rgba(46,204,113,0.3);
+      color: #27ae60;
+      display: block;
+    }
+    .submit-status.error {
+      background: rgba(231,76,60,0.1);
+      border: 1px solid rgba(231,76,60,0.3);
+      color: #e74c3c;
+      display: block;
+    }
+
+    /* ── Pricing cards ── */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    @media (max-width: 700px) {
+      .pricing-grid { grid-template-columns: 1fr 1fr; }
+    }
+    .price-card {
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+      text-align: center;
+    }
+    .price-card .season {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--navy);
+    }
+    .price-card .months {
+      font-size: 11px;
+      color: var(--text-m);
+      margin: 2px 0 8px;
+    }
+    .price-card .amount {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--navy);
+    }
+    .price-card .per {
+      font-size: 11px;
+      color: var(--text-m);
+      text-transform: uppercase;
+    }
+    .pricing-note {
+      font-size: 12px;
+      color: var(--text-m);
+      margin-top: 8px;
+      line-height: 1.6;
+    }
+
+    /* ── Footer ── */
+    .footer {
+      background: var(--navy-d);
+      color: rgba(255,255,255,0.5);
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 12px;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="header-left">
+      <div class="logo-mark"><img src="https://rentacatamaran.net/wp-content/uploads/2020/10/SIS_logo_wit.png" alt="Sail in Spain"></div>
+    </div>
+    <nav class="nav">
+      <a href="https://rentacatamaran.net/">Home</a>
+      <a href="https://rentacatamaran.net/info/">Info</a>
+      <a href="https://rentacatamaran.net/prices/">Prices</a>
+      <a href="https://rentacatamaran.net/contact/">Contact</a>
+      <a href="#booking-form" class="btn-book">Book your Trip</a>
+    </nav>
+  </div>
+
+  <div class="hero">
+    <div class="hero-sub">Get in touch</div>
+    <h2>Contact & Location info</h2>
+    <p>Book your private catamaran charter along the Spanish coast</p>
+  </div>
+
+  <div class="contact-bar">
+    <div class="contact-card">
+      <h3>Location</h3>
+      <p>Sotogrande / P. Banus</p>
+    </div>
+    <div class="contact-card">
+      <h3>Phone</h3>
+      <p>+32 496 57 13 97</p>
+    </div>
+    <div class="contact-card">
+      <h3>Email</h3>
+      <p>INFO@SAILINSPAIN.BE</p>
+    </div>
+  </div>
+
+  <div class="body" id="booking-form">
+
+    <!-- Trip selection -->
+    <div class="section">
+      <div class="section-head"><i class="fa-solid fa-sailboat"></i><span>Choose your trip</span></div>
+      <div class="section-body">
+        <div class="row2">
+          <div class="field">
+            <label>Trip type <span class="req">*</span></label>
+            <div class="check-group">
+              <label class="check-item"><input type="checkbox" name="trip" value="1 day charter"> 1 day charter</label>
+              <label class="check-item"><input type="checkbox" name="trip" value="2 day charter"> 2 day charter</label>
+              <label class="check-item"><input type="checkbox" name="trip" value="3 day charter"> 3 day charter</label>
+              <label class="check-item"><input type="checkbox" name="trip" value="½ day-charter"> ½ day charter</label>
+              <label class="check-item"><input type="checkbox" name="trip" value="Sunset-charter"> Sunset charter</label>
+            </div>
+          </div>
+          <div class="field">
+            <label>Departure port <span class="req">*</span></label>
+            <div class="check-group">
+              <label class="check-item"><input type="radio" name="port" value="Sotogrande"> Sotogrande</label>
+              <label class="check-item"><input type="radio" name="port" value="Puerto Banús"> Puerto Banus</label>
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <label>Start date <span class="req">*</span></label>
+          <input type="date" id="start-date">
+        </div>
+      </div>
+    </div>
+
+    <!-- Your details -->
+    <div class="section">
+      <div class="section-head"><i class="fa-solid fa-user"></i><span>Your details</span></div>
+      <div class="section-body">
+        <div class="row2">
+          <div class="field"><label>First name <span class="req">*</span></label><input type="text" id="firstname" placeholder="First name" autocomplete="given-name"></div>
+          <div class="field"><label>Surname <span class="req">*</span></label><input type="text" id="surname" placeholder="Surname" autocomplete="family-name"></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>E-mail <span class="req">*</span></label><input type="email" id="email" placeholder="your@email.com" autocomplete="email"></div>
+          <div class="field"><label>Phone <span class="req">*</span></label><input type="tel" id="phone" placeholder="+32 ..." autocomplete="tel"></div>
+        </div>
+        <div class="field">
+          <label>Additional info (e.g. allergies, special requests etc.)</label>
+          <textarea id="additional" maxlength="180" placeholder="Any special requests..." oninput="updateCount()"></textarea>
+          <div class="char-count"><span id="char-count">0</span> / 180</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pricing -->
+    <div class="section">
+      <div class="section-head"><i class="fa-solid fa-tag"></i><span>Prices</span></div>
+      <div class="section-body">
+        <div class="pricing-grid">
+          <div class="price-card">
+            <div class="season">Low season</div>
+            <div class="months">October – March</div>
+            <div class="amount">2.000€</div>
+            <div class="per">per day</div>
+          </div>
+          <div class="price-card">
+            <div class="season">Mid season</div>
+            <div class="months">April & May</div>
+            <div class="amount">2.600€</div>
+            <div class="per">per day</div>
+          </div>
+          <div class="price-card">
+            <div class="season">Start / End</div>
+            <div class="months">June & September</div>
+            <div class="amount">3.000€</div>
+            <div class="per">per day</div>
+          </div>
+          <div class="price-card">
+            <div class="season">High season</div>
+            <div class="months">July & August</div>
+            <div class="amount">3.600€</div>
+            <div class="per">per day</div>
+          </div>
+        </div>
+        <div class="pricing-note">
+          <strong>*Additional costs:</strong> Fuel forfeit €75 · Captain & stewardess €500 (mandatory)<br>
+          Prices for 3-day trips or more (max. 4 people) on request to <a href="mailto:alegria@sailinspain.be" style="color:var(--navy)">alegria@sailinspain.be</a>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-submit" id="btn-submit" onclick="submitBooking()">
+      <i class="fa-solid fa-paper-plane"></i> Submit
+    </button>
+    <div class="submit-status" id="submit-status"></div>
+
+  </div>
+
+  <div class="footer">
+    &copy; 2026 Sail in Spain. All rights reserved.
+  </div>
+
+  <script>
+    function updateCount() {
+      const ta = document.getElementById('additional');
+      document.getElementById('char-count').textContent = ta.value.length;
+    }
+
+    function getTrips() {
+      return Array.from(document.querySelectorAll('input[name="trip"]:checked')).map(c => c.value);
+    }
+
+    function getPort() {
+      const r = document.querySelector('input[name="port"]:checked');
+      return r ? r.value : '';
+    }
+
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyL6zkSubGeKpEsVlZAdVWbBg_RePKGggPj7US-ZjQ0whUelexHXhnGNEsxS871vjIV/exec';
+
+    function submitBooking() {
+      const btn = document.getElementById('btn-submit');
+      const status = document.getElementById('submit-status');
+
+      const firstname = document.getElementById('firstname').value.trim();
+      const surname = document.getElementById('surname').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const trips = getTrips();
+      const port = getPort();
+
+      if (!firstname || !surname || !email || !phone || trips.length === 0 || !port) {
+        status.className = 'submit-status error';
+        status.innerHTML = '<i class="fa-solid fa-exclamation-circle"></i> Please fill in all required fields.';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting...';
+      status.className = 'submit-status';
+      status.style.display = 'none';
+
+      const data = {
+        name:       firstname + ' ' + surname,
+        email:      email,
+        phone:      phone,
+        port:       port,
+        trip:       trips.join(', '),
+        dateFrom:   document.getElementById('start-date').value,
+        additional: document.getElementById('additional').value
+      };
+
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      })
+      .then(() => {
+        status.className = 'submit-status success';
+        status.innerHTML = '<i class="fa-solid fa-check-circle"></i> Thank you! We will get back to you shortly.';
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> Submitted!';
+        btn.style.background = '#27ae60';
+      })
+      .catch(() => {
+        status.className = 'submit-status error';
+        status.innerHTML = '<i class="fa-solid fa-exclamation-circle"></i> Submission failed. Please try again.';
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit';
+      });
+    }
+  </script>
+</body>
+</html>

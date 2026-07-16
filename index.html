@@ -371,6 +371,27 @@
       line-height: 1.6;
     }
 
+    /* ── Price result ── */
+    .price-result {
+      background: rgba(45,74,90,0.06);
+      border: 1px solid rgba(45,74,90,0.2);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      font-size: 14px;
+      color: var(--text);
+      line-height: 1.7;
+    }
+    .price-result .price-total {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--navy);
+    }
+    .price-result .price-detail {
+      font-size: 12px;
+      color: var(--text-m);
+      margin-top: 4px;
+    }
+
     /* ── Footer ── */
     .footer {
       background: var(--navy-d);
@@ -428,11 +449,11 @@
           <div class="field">
             <label>Trip type <span class="req">*</span></label>
             <div class="check-group">
-              <label class="check-item"><input type="checkbox" name="trip" value="1 day charter"> 1 day charter</label>
-              <label class="check-item"><input type="checkbox" name="trip" value="2 day charter"> 2 day charter</label>
-              <label class="check-item"><input type="checkbox" name="trip" value="3 day charter"> 3 day charter</label>
-              <label class="check-item"><input type="checkbox" name="trip" value="½ day-charter"> ½ day charter</label>
-              <label class="check-item"><input type="checkbox" name="trip" value="Sunset-charter"> Sunset charter</label>
+              <label class="check-item"><input type="checkbox" name="trip" value="1 day charter" onchange="calcPrice()"> 1 day charter</label>
+              <label class="check-item"><input type="checkbox" name="trip" value="2 day charter" onchange="calcPrice()"> 2 day charter</label>
+              <label class="check-item"><input type="checkbox" name="trip" value="3 day charter" onchange="calcPrice()"> 3 day charter</label>
+              <label class="check-item"><input type="checkbox" name="trip" value="½ day-charter" onchange="calcPrice()"> ½ day charter</label>
+              <label class="check-item"><input type="checkbox" name="trip" value="Sunset-charter" onchange="calcPrice()"> Sunset charter</label>
             </div>
           </div>
           <div class="field">
@@ -445,8 +466,9 @@
         </div>
         <div class="field">
           <label>Start date <span class="req">*</span></label>
-          <input type="date" id="start-date">
+          <input type="date" id="start-date" oninput="calcPrice()">
         </div>
+        <div class="price-result" id="price-result" style="display:none"></div>
       </div>
     </div>
 
@@ -519,6 +541,65 @@
   </div>
 
   <script>
+    const PRICES = {
+      1: { low: 1990, mid: 2599, startend: 2990, high: 3599 },
+      2: { low: 2989, mid: 3890, startend: 4490, high: 5390 },
+      3: { low: 3850, mid: 5190, startend: 5990, high: 7190 }
+    };
+    const FUEL = { 1: 75, 2: 150, 3: 225 };
+    const CREW = { 1: 500, 2: 1000, 3: 1500 };
+
+    function getSeason(month) {
+      if ([0,1,2,10,11].includes(month)) return 'low';
+      if ([3,4,9].includes(month))       return 'mid';
+      if ([5,8].includes(month))         return 'startend';
+      return 'high';
+    }
+
+    function getSeasonLabel(s) {
+      return { low: 'Low season', mid: 'Mid season', startend: 'Start/End season', high: 'High season' }[s];
+    }
+
+    function calcPrice() {
+      const el = document.getElementById('price-result');
+      const date = document.getElementById('start-date').value;
+      const trips = Array.from(document.querySelectorAll('input[name="trip"]:checked')).map(c => c.value);
+
+      if (!date || trips.length === 0) { el.style.display = 'none'; return; }
+
+      const month = new Date(date).getMonth();
+      const season = getSeason(month);
+      const label = getSeasonLabel(season);
+
+      let days = 0;
+      let tripLabel = '';
+      if (trips.includes('1 day charter'))       { days = 1; tripLabel = '1 day charter'; }
+      else if (trips.includes('2 day charter'))   { days = 2; tripLabel = '2 day charter'; }
+      else if (trips.includes('3 day charter'))   { days = 3; tripLabel = '3 day charter'; }
+      else if (trips.includes('½ day-charter'))   { tripLabel = '½ day charter'; }
+      else if (trips.includes('Sunset-charter'))  { tripLabel = 'Sunset charter'; }
+
+      if (days === 0) {
+        el.innerHTML = '<strong>' + tripLabel + '</strong> — ' + label +
+          '<div class="price-detail">Price on request. Contact us at <a href="mailto:alegria@sailinspain.be" style="color:var(--navy)">alegria@sailinspain.be</a></div>';
+        el.style.display = 'block';
+        return;
+      }
+
+      const base = PRICES[days][season];
+      const fuel = FUEL[days];
+      const crew = CREW[days];
+      const total = base + fuel + crew;
+
+      el.innerHTML =
+        '<strong>' + tripLabel + '</strong> — ' + label +
+        '<br><span class="price-total">€ ' + total.toLocaleString('de-DE') + '</span>' +
+        '<div class="price-detail">Base: €' + base.toLocaleString('de-DE') +
+        ' · Crew: €' + crew.toLocaleString('de-DE') +
+        ' · Fuel: €' + fuel.toLocaleString('de-DE') + '</div>';
+      el.style.display = 'block';
+    }
+
     function updateCount() {
       const ta = document.getElementById('additional');
       document.getElementById('char-count').textContent = ta.value.length;

@@ -10,31 +10,34 @@
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Didact+Gothic&family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --navy:      #2d4a5a;
-      --navy-d:    #1a3344;
-      --teal:      #3a7085;
-      --gold:      #c9a84c;
-      --gold-l:    #b8952e;
+      --navy:      #043444;
+      --navy-d:    #032a36;
+      --teal:      #043444;
+      --gold:      #ccbea7;
+      --gold-l:    #b8a88e;
       --white:     #ffffff;
-      --bg:        #f4f6f8;
+      --bg:        #ffffff;
       --card:      #ffffff;
-      --border:    #d8dfe6;
-      --text:      #2c3e50;
-      --text-m:    #5a6c7d;
-      --input-bg:  #f8f9fb;
-      --radius:    8px;
+      --border:    #e0e0e0;
+      --text:      #666666;
+      --text-m:    #999999;
+      --input-bg:  #f7f7f7;
+      --radius:    4px;
     }
 
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      font-size: 16px;
-      line-height: 1.5;
+      font-family: 'Lato', Helvetica, Arial, Lucida, sans-serif;
+      font-size: 14px;
+      line-height: 1.7;
       min-height: 100vh;
     }
 
@@ -75,7 +78,7 @@
       flex-shrink: 0;
     }
     .logo-mark img { height: 100%; width: auto; }
-    .header h1 { font-size: 16px; font-weight: 600; color: var(--white); letter-spacing: 0.02em; }
+    .header h1 { font-size: 16px; font-weight: 600; color: var(--white); letter-spacing: 0.02em; font-family: 'Didact Gothic', Helvetica, Arial, sans-serif; }
 
     .nav { display: flex; gap: 20px; align-items: center; }
     .nav a {
@@ -117,8 +120,9 @@
       margin-bottom: 8px;
     }
     .hero h2 {
+      font-family: 'Didact Gothic', Helvetica, Arial, sans-serif;
       font-size: 28px;
-      font-weight: 700;
+      font-weight: 400;
       margin-bottom: 6px;
     }
     .hero p {
@@ -140,8 +144,9 @@
       color: var(--white);
     }
     .contact-card h3 {
+      font-family: 'Didact Gothic', Helvetica, Arial, sans-serif;
       font-size: 16px;
-      font-weight: 600;
+      font-weight: 400;
       margin-bottom: 4px;
     }
     .contact-card p {
@@ -164,22 +169,23 @@
     /* ── Section ── */
     .section {
       background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
       overflow: hidden;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     }
     .section-head {
       padding: 0.75rem 1.25rem;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid #ccc;
       display: flex;
       align-items: center;
       gap: 8px;
-      background: var(--bg);
+      background: #f9f9f9;
     }
     .section-head i { color: var(--navy); font-size: 14px; }
     .section-head span {
-      font-size: 11px; font-weight: 700;
+      font-family: 'Didact Gothic', Helvetica, Arial, sans-serif;
+      font-size: 12px; font-weight: 400;
       color: var(--navy);
       letter-spacing: 0.09em;
       text-transform: uppercase;
@@ -343,8 +349,9 @@
       text-align: center;
     }
     .price-card .season {
-      font-size: 11px;
-      font-weight: 700;
+      font-family: 'Didact Gothic', Helvetica, Arial, sans-serif;
+      font-size: 12px;
+      font-weight: 400;
       text-transform: uppercase;
       letter-spacing: 0.08em;
       color: var(--navy);
@@ -360,9 +367,21 @@
       color: var(--navy);
     }
     .price-card .per {
-      font-size: 11px;
+      font-size: 14px;
       color: var(--text-m);
-      text-transform: uppercase;
+      font-weight: 400;
+    }
+    .price-card .half-price {
+      font-size: 12px;
+      color: var(--text-m);
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+      line-height: 1.5;
+    }
+    .price-card .half-price strong {
+      color: var(--navy);
+      font-size: 14px;
     }
     .pricing-note {
       font-size: 12px;
@@ -394,8 +413,8 @@
 
     /* ── Footer ── */
     .footer {
-      background: var(--navy-d);
-      color: rgba(255,255,255,0.5);
+      background: var(--gold);
+      color: var(--text);
       text-align: center;
       padding: 1.5rem;
       font-size: 12px;
@@ -500,31 +519,34 @@
           <div class="price-card">
             <div class="season">Low season</div>
             <div class="months">October – March</div>
-            <div class="amount">2.000€</div>
-            <div class="per">per day</div>
+            <div class="amount">2.000€<span class="per">/day</span></div>
+            <div class="half-price">½ day / Sunset from<br><strong>1.200€</strong>/trip</div>
           </div>
           <div class="price-card">
             <div class="season">Mid season</div>
             <div class="months">April & May</div>
-            <div class="amount">2.600€</div>
-            <div class="per">per day</div>
+            <div class="amount">2.600€<span class="per">/day</span></div>
+            <div class="half-price">½ day / Sunset from<br><strong>1.560€</strong>/trip</div>
           </div>
           <div class="price-card">
             <div class="season">Start / End</div>
             <div class="months">June & September</div>
-            <div class="amount">3.000€</div>
-            <div class="per">per day</div>
+            <div class="amount">3.000€<span class="per">/day</span></div>
+            <div class="half-price">½ day / Sunset from<br><strong>1.800€</strong>/trip</div>
           </div>
           <div class="price-card">
             <div class="season">High season</div>
             <div class="months">July & August</div>
-            <div class="amount">3.600€</div>
-            <div class="per">per day</div>
+            <div class="amount">3.600€<span class="per">/day</span></div>
+            <div class="half-price">½ day / Sunset from<br><strong>2.160€</strong>/trip</div>
           </div>
         </div>
         <div class="pricing-note">
-          <strong>*Additional costs:</strong> Fuel forfeit €75 · Captain & stewardess €500 (mandatory)<br>
-          Prices for 3-day trips or more (max. 4 people) on request to <a href="mailto:alegria@sailinspain.be" style="color:var(--navy)">alegria@sailinspain.be</a>
+          <strong>*Additional costs:</strong><br>
+          Fuel forfeit €75 · Captain & stewardess €500 (mandatory)<br>
+          For ½ day / sunset charter: Captain & stewardess €300<br>
+          Prices for 3-day trips or more (max. 4 people) on request to <a href="mailto:alegria@sailinspain.be" style="color:var(--navy)">alegria@sailinspain.be</a><br>
+          All prices are incl. VAT
         </div>
       </div>
     </div>
@@ -542,12 +564,13 @@
 
   <script>
     const PRICES = {
-      1: { low: 1990, mid: 2599, startend: 2990, high: 3599 },
-      2: { low: 2989, mid: 3890, startend: 4490, high: 5390 },
-      3: { low: 3850, mid: 5190, startend: 5990, high: 7190 }
+      1:    { low: 1990, mid: 2599, startend: 2990, high: 3599 },
+      2:    { low: 2989, mid: 3890, startend: 4490, high: 5390 },
+      3:    { low: 3850, mid: 5190, startend: 5990, high: 7190 },
     };
     const FUEL = { 1: 75, 2: 150, 3: 225 };
     const CREW = { 1: 500, 2: 1000, 3: 1500 };
+    const HALF_RATE = 0.6;
 
     function getSeason(month) {
       if ([0,1,2,10,11].includes(month)) return 'low';
@@ -571,24 +594,20 @@
       const season = getSeason(month);
       const label = getSeasonLabel(season);
 
-      let days = 0;
+      let key = null;
       let tripLabel = '';
-      if (trips.includes('1 day charter'))       { days = 1; tripLabel = '1 day charter'; }
-      else if (trips.includes('2 day charter'))   { days = 2; tripLabel = '2 day charter'; }
-      else if (trips.includes('3 day charter'))   { days = 3; tripLabel = '3 day charter'; }
-      else if (trips.includes('½ day-charter'))   { tripLabel = '½ day charter'; }
-      else if (trips.includes('Sunset-charter'))  { tripLabel = 'Sunset charter'; }
+      let isHalf = false;
+      if (trips.includes('1 day charter'))       { key = 1; tripLabel = '1 day charter'; }
+      else if (trips.includes('2 day charter'))   { key = 2; tripLabel = '2 day charter'; }
+      else if (trips.includes('3 day charter'))   { key = 3; tripLabel = '3 day charter'; }
+      else if (trips.includes('½ day-charter'))   { key = 1; tripLabel = '½ day charter'; isHalf = true; }
+      else if (trips.includes('Sunset-charter'))  { key = 1; tripLabel = 'Sunset charter'; isHalf = true; }
 
-      if (days === 0) {
-        el.innerHTML = '<strong>' + tripLabel + '</strong> — ' + label +
-          '<div class="price-detail">Price on request. Contact us at <a href="mailto:alegria@sailinspain.be" style="color:var(--navy)">alegria@sailinspain.be</a></div>';
-        el.style.display = 'block';
-        return;
-      }
+      if (!key) { el.style.display = 'none'; return; }
 
-      const base = PRICES[days][season];
-      const fuel = FUEL[days];
-      const crew = CREW[days];
+      const base = isHalf ? Math.round(PRICES[1][season] * HALF_RATE) : PRICES[key][season];
+      const fuel = FUEL[key];
+      const crew = isHalf ? Math.round(CREW[1] * HALF_RATE) : CREW[key];
       const total = base + fuel + crew;
 
       el.innerHTML =

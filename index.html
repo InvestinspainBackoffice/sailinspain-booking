@@ -233,6 +233,7 @@
     .field textarea:focus,
     .field select:focus { border-color: var(--navy); box-shadow: 0 0 0 2px rgba(45,74,90,0.12); }
     .field select { cursor: pointer; }
+    .field input[readonly] { color: var(--text-m); cursor: not-allowed; }
     .field textarea { resize: vertical; min-height: 80px; }
     .field .char-count {
       font-size: 11px;
@@ -468,24 +469,37 @@
           <div class="field">
             <label>Trip type <span class="req">*</span></label>
             <div class="check-group">
-              <label class="check-item"><input type="checkbox" name="trip" value="1 day charter" onchange="calcPrice()"> 1 day charter</label>
-              <label class="check-item"><input type="checkbox" name="trip" value="2 day charter" onchange="calcPrice()"> 2 day charter</label>
-              <label class="check-item"><input type="checkbox" name="trip" value="3 day charter" onchange="calcPrice()"> 3 day charter</label>
-              <label class="check-item"><input type="checkbox" name="trip" value="½ day-charter" onchange="calcPrice()"> ½ day charter</label>
-              <label class="check-item"><input type="checkbox" name="trip" value="Sunset-charter" onchange="calcPrice()"> Sunset charter</label>
+              <label class="check-item"><input type="checkbox" name="trip" value="1 day charter" onchange="onTripChange(this)"> 1 day charter</label>
+              <label class="check-item"><input type="checkbox" name="trip" value="2 day charter" onchange="onTripChange(this)"> 2 day charter</label>
+              <label class="check-item"><input type="checkbox" name="trip" value="3 day charter" onchange="onTripChange(this)"> 3 day charter</label>
+              <label class="check-item"><input type="checkbox" name="trip" value="½ day-charter" onchange="onTripChange(this)"> ½ day charter</label>
+              <label class="check-item"><input type="checkbox" name="trip" value="Sunset-charter" onchange="onTripChange(this)"> Sunset charter</label>
             </div>
           </div>
           <div class="field">
             <label>Departure port <span class="req">*</span></label>
             <div class="check-group">
-              <label class="check-item"><input type="radio" name="port" value="Sotogrande"> Sotogrande</label>
-              <label class="check-item"><input type="radio" name="port" value="Puerto Banús"> Puerto Banus</label>
+              <label class="check-item"><input type="radio" name="port" value="Sotogrande" onchange="calcPrice()"> Sotogrande</label>
+              <label class="check-item"><input type="radio" name="port" value="Puerto Banús" onchange="calcPrice()"> Puerto Banus</label>
             </div>
           </div>
         </div>
+        <div class="row2">
+          <div class="field">
+            <label>Number of persons <span class="req">*</span></label>
+            <select id="persons" onchange="calcPrice()"></select>
+            <div class="char-count" style="text-align:left" id="persons-note">Day trips: max 10. Multi-day: max 6 (incl. skipper &amp; crew (2)).</div>
+          </div>
+          <div class="field">
+            <label>Start date <span class="req">*</span></label>
+            <input type="date" id="start-date" oninput="calcPrice()">
+            <div class="char-count" style="text-align:left">Bookings within 7 days are not accepted.</div>
+          </div>
+        </div>
         <div class="field">
-          <label>Start date <span class="req">*</span></label>
-          <input type="date" id="start-date" oninput="calcPrice()">
+          <label>End date</label>
+          <input type="date" id="end-date" readonly>
+          <div class="char-count" style="text-align:left">The end date is calculated automatically based on the selected trip and cannot be edited.</div>
         </div>
         <div class="price-result" id="price-result" style="display:none"></div>
       </div>
@@ -508,6 +522,70 @@
           <textarea id="additional" maxlength="180" placeholder="Any special requests..." oninput="updateCount()"></textarea>
           <div class="char-count"><span id="char-count">0</span> / 180</div>
         </div>
+      </div>
+    </div>
+
+    <!-- Catering & Drinks -->
+    <div class="section">
+      <div class="section-head"><i class="fa-solid fa-utensils"></i><span>Catering &amp; Drinks Selection</span></div>
+      <div class="section-body">
+
+        <!-- FOOD -->
+        <div class="field">
+          <label style="font-size:14px; font-weight:700; color:var(--navy); font-family:'Didact Gothic',Helvetica,Arial,sans-serif; text-transform:uppercase; letter-spacing:0.06em;">Food</label>
+          <p style="font-size:13px; color:var(--text-m); margin-bottom:8px;">Snacks (crisps, olives, nuts, etc.) included ✔</p>
+          <div class="check-group" style="flex-direction:column; gap:6px;">
+            <label class="check-item"><input type="checkbox" name="food" value="Mediterranean breakfast board"> Mediterranean breakfast board</label>
+            <label class="check-item"><input type="checkbox" name="food" value="Chicken salad"> Chicken salad</label>
+            <label class="check-item"><input type="checkbox" name="food" value="Pasta deluxe (prawns)"> Pasta deluxe (prawns)</label>
+            <label class="check-item"><input type="checkbox" name="food" value="Paella"> Paella</label>
+            <label class="check-item"><input type="checkbox" name="food" value="Tapas board – luxury version"> Tapas board – luxury version</label>
+            <label class="check-item"><input type="checkbox" name="food" value="Fresh Tortilla"> Fresh Tortilla</label>
+            <label class="check-item"><input type="checkbox" name="food" value="Tiramisu"> Tiramisu</label>
+            <label class="check-item"><input type="checkbox" name="food" value="Fresh fruit"> Fresh fruit</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Special food requests</label>
+          <input type="text" id="food-requests" placeholder="e.g. vegetarian, allergies...">
+        </div>
+
+        <hr style="border:none; border-top:2px solid var(--navy); margin:8px 0;">
+
+        <!-- DRINKS -->
+        <div class="field">
+          <label style="font-size:14px; font-weight:700; color:var(--navy); font-family:'Didact Gothic',Helvetica,Arial,sans-serif; text-transform:uppercase; letter-spacing:0.06em;">Drinks</label>
+          <p style="font-size:13px; color:var(--text-m); margin-bottom:8px;">Soft drinks included ✔</p>
+          <p style="font-size:13px; color:var(--text); margin-bottom:8px;">Alcohol (optional):</p>
+          <div class="check-group" style="flex-direction:column; gap:6px;">
+            <label class="check-item"><input type="checkbox" name="drinks" value="Wine (Rosé, Red, White)"> Wine (Rosé, Red, White)</label>
+            <label class="check-item"><input type="checkbox" name="drinks" value="Cava"> Cava</label>
+            <label class="check-item"><input type="checkbox" name="drinks" value="Champagne"> Champagne</label>
+            <label class="check-item"><input type="checkbox" name="drinks" value="Gin & tonic"> Gin &amp; tonic</label>
+            <label class="check-item"><input type="checkbox" name="drinks" value="Vodka + fresh orange"> Vodka + fresh orange</label>
+            <label class="check-item"><input type="checkbox" name="drinks" value="Mojito"> Mojito</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Wine details (how many bottles, Rosé / Red / White?)</label>
+          <input type="text" id="wine-details" placeholder="e.g. 2x Rosé, 1x White">
+        </div>
+        <div class="field">
+          <label>Cava / Champagne (how many bottles?)</label>
+          <input type="text" id="cava-details" placeholder="e.g. 2 bottles Cava">
+        </div>
+
+        <hr style="border:none; border-top:2px solid var(--navy); margin:8px 0;">
+
+        <!-- CATERING PRICE -->
+        <div class="field">
+          <label style="font-size:14px; font-weight:700; color:var(--navy); font-family:'Didact Gothic',Helvetica,Arial,sans-serif;">Catering price</label>
+          <p style="font-size:12px; color:var(--text-m); margin-bottom:6px;">To be confirmed by Sail in Spain</p>
+          <div class="price-result" style="display:block; text-align:center; padding:16px;">
+            <span style="font-size:18px; color:var(--text-m); font-style:italic;">Price on request</span>
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -583,36 +661,126 @@
       return { low: 'Low season', mid: 'Mid season', startend: 'Start/End season', high: 'High season' }[s];
     }
 
+    // ── Trip meta: days on the water, whether it's a "multi-day" trip, and max guests ──
+    const TRIP_META = {
+      '1 day charter':  { key: 1, label: '1 day charter',  isHalf: false, spanDays: 1, maxPersons: 10 },
+      '2 day charter':  { key: 2, label: '2 day charter',  isHalf: false, spanDays: 2, maxPersons: 6 },
+      '3 day charter':  { key: 3, label: '3 day charter',  isHalf: false, spanDays: 3, maxPersons: 6 },
+      '½ day-charter':  { key: 1, label: '½ day charter',  isHalf: true,  spanDays: 1, maxPersons: 10 },
+      'Sunset-charter': { key: 1, label: 'Sunset charter', isHalf: true,  spanDays: 1, maxPersons: 10 },
+    };
+
+    function getSelectedTrip() {
+      const checked = document.querySelector('input[name="trip"]:checked');
+      return checked ? TRIP_META[checked.value] : null;
+    }
+
+    // Keep trip-type selection to a single choice (site only ever prices one trip at a time)
+    function onTripChange(checkbox) {
+      if (checkbox.checked) {
+        document.querySelectorAll('input[name="trip"]').forEach(c => { if (c !== checkbox) c.checked = false; });
+      }
+      populatePersons();
+      updateEndDate();
+      calcPrice();
+    }
+
+    function populatePersons() {
+      const trip = getSelectedTrip();
+      const max = trip ? trip.maxPersons : 10;
+      const select = document.getElementById('persons');
+      const prev = select.value;
+      select.innerHTML = '';
+      for (let i = 1; i <= max; i++) {
+        const opt = document.createElement('option');
+        opt.value = i;
+        opt.textContent = i;
+        select.appendChild(opt);
+      }
+      if (prev && Number(prev) <= max) select.value = prev;
+    }
+
+    function addDays(dateStr, days) {
+      const d = new Date(dateStr + 'T00:00:00');
+      d.setDate(d.getDate() + days);
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return y + '-' + m + '-' + day;
+    }
+
+    function updateEndDate() {
+      const trip = getSelectedTrip();
+      const start = document.getElementById('start-date').value;
+      const endInput = document.getElementById('end-date');
+      if (!trip || !start) { endInput.value = ''; return; }
+      endInput.value = addDays(start, trip.spanDays - 1);
+    }
+
+    function todayLocal() {
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return y + '-' + m + '-' + day;
+    }
+
+    function minBookableDate() {
+      return addDays(todayLocal(), 7);
+    }
+
+    function tripBreakdown(trip, season) {
+      const base = trip.isHalf ? Math.round(PRICES[1][season] * HALF_RATE) : PRICES[trip.key][season];
+      const fuel = FUEL[trip.key];
+      const crew = trip.isHalf ? Math.round(CREW[1] * HALF_RATE) : CREW[trip.key];
+      return { base: base, fuel: fuel, crew: crew, total: base + fuel + crew };
+    }
+
     function calcPrice() {
       const el = document.getElementById('price-result');
-      const date = document.getElementById('start-date').value;
-      const trips = Array.from(document.querySelectorAll('input[name="trip"]:checked')).map(c => c.value);
+      updateEndDate();
 
-      if (!date || trips.length === 0) { el.style.display = 'none'; return; }
+      const date = document.getElementById('start-date').value;
+      const trip = getSelectedTrip();
+      const port = getPort();
+      const persons = document.getElementById('persons').value;
+
+      if (!trip) { el.style.display = 'none'; return; }
+
+      // Trip type chosen but no (valid) start date yet: show an indicative range across all seasons
+      if (!date) {
+        const seasons = ['low', 'mid', 'startend', 'high'];
+        const totals = seasons.map(s => tripBreakdown(trip, s).total);
+        const min = Math.min(...totals);
+        const max = Math.max(...totals);
+        el.innerHTML =
+          '<strong>' + trip.label + '</strong> — price indication' +
+          '<br><span class="price-total">€ ' + min.toLocaleString('de-DE') + ' – € ' + max.toLocaleString('de-DE') + '</span>' +
+          '<div class="price-detail">Depends on season · incl. fuel &amp; crew · pick a start date for the exact price</div>';
+        el.style.display = 'block';
+        return;
+      }
+
+      if (date < minBookableDate()) {
+        el.style.display = 'block';
+        el.innerHTML = '<i class="fa-solid fa-triangle-exclamation" style="color:#e74c3c"></i> Bookings within 7 days are not accepted. Please choose a later start date.';
+        return;
+      }
 
       const month = new Date(date).getMonth();
       const season = getSeason(month);
       const label = getSeasonLabel(season);
 
-      let key = null;
-      let tripLabel = '';
-      let isHalf = false;
-      if (trips.includes('1 day charter'))       { key = 1; tripLabel = '1 day charter'; }
-      else if (trips.includes('2 day charter'))   { key = 2; tripLabel = '2 day charter'; }
-      else if (trips.includes('3 day charter'))   { key = 3; tripLabel = '3 day charter'; }
-      else if (trips.includes('½ day-charter'))   { key = 1; tripLabel = '½ day charter'; isHalf = true; }
-      else if (trips.includes('Sunset-charter'))  { key = 1; tripLabel = 'Sunset charter'; isHalf = true; }
-
-      if (!key) { el.style.display = 'none'; return; }
-
-      const base = isHalf ? Math.round(PRICES[1][season] * HALF_RATE) : PRICES[key][season];
-      const fuel = FUEL[key];
-      const crew = isHalf ? Math.round(CREW[1] * HALF_RATE) : CREW[key];
-      const total = base + fuel + crew;
+      const { base, fuel, crew, total } = tripBreakdown(trip, season);
+      const endDate = document.getElementById('end-date').value;
+      const dateRange = endDate && endDate !== date ? (date + ' → ' + endDate) : date;
 
       el.innerHTML =
-        '<strong>' + tripLabel + '</strong> — ' + label +
-        '<br><span class="price-total">€ ' + total.toLocaleString('de-DE') + '</span>' +
+        '<strong>' + trip.label + '</strong> — ' + label +
+        '<div class="price-detail">Departure: ' + (port || '—') +
+        ' · Guests: ' + persons +
+        ' · Dates: ' + dateRange + '</div>' +
+        '<span class="price-total">€ ' + total.toLocaleString('de-DE') + '</span>' +
         '<div class="price-detail">Base: €' + base.toLocaleString('de-DE') +
         ' · Crew: €' + crew.toLocaleString('de-DE') +
         ' · Fuel: €' + fuel.toLocaleString('de-DE') + '</div>';
@@ -633,6 +801,10 @@
       return r ? r.value : '';
     }
 
+    // ── Init ──
+    document.getElementById('start-date').min = minBookableDate();
+    populatePersons();
+
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzwy_palNZ-yu8d5vCVfb2ItdOriWlqnvf5RRTfpY4JYP4qrE0M2RxUc_9YNOJArwh8/exec';
 
     function submitBooking() {
@@ -645,10 +817,18 @@
       const phone = document.getElementById('phone').value.trim();
       const trips = getTrips();
       const port = getPort();
+      const startDate = document.getElementById('start-date').value;
+      const persons = document.getElementById('persons').value;
 
-      if (!firstname || !surname || !email || !phone || trips.length === 0 || !port) {
+      if (!firstname || !surname || !email || !phone || trips.length === 0 || !port || !startDate) {
         status.className = 'submit-status error';
         status.innerHTML = '<i class="fa-solid fa-exclamation-circle"></i> Please fill in all required fields.';
+        return;
+      }
+
+      if (startDate < minBookableDate()) {
+        status.className = 'submit-status error';
+        status.innerHTML = '<i class="fa-solid fa-exclamation-circle"></i> Bookings within 7 days are not accepted.';
         return;
       }
 
@@ -657,14 +837,24 @@
       status.className = 'submit-status';
       status.style.display = 'none';
 
+      const foodItems = Array.from(document.querySelectorAll('input[name="food"]:checked')).map(c => c.value);
+      const drinkItems = Array.from(document.querySelectorAll('input[name="drinks"]:checked')).map(c => c.value);
+
       const data = {
         name:       firstname + ' ' + surname,
         email:      email,
         phone:      phone,
         port:       port,
-        trip:       trips.join(', '),
-        dateFrom:   document.getElementById('start-date').value,
-        additional: document.getElementById('additional').value
+        tripType:   trips.join(', '),
+        persons:    persons,
+        dateFrom:   startDate,
+        dateTo:     document.getElementById('end-date').value,
+        additional: document.getElementById('additional').value,
+        foods:      foodItems.join(', '),
+        special:    document.getElementById('food-requests').value,
+        drinks:     drinkItems.join(', '),
+        wine:       document.getElementById('wine-details').value,
+        bubbly:     document.getElementById('cava-details').value
       };
 
       fetch(SCRIPT_URL, {

@@ -41,7 +41,9 @@
 
     /* ── Site header (overlaid on hero) ── */
     .header {
-      padding: 0.6rem 1.25rem;
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 0.6rem clamp(10px, 1.5vw, 18px);
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -60,10 +62,10 @@
     .sis-booking-widget, .sis-booking-widget *{ box-sizing:border-box; }
     .sis-booking-widget{ max-width:1180px; margin:0 auto; padding:clamp(10px, 1.5vw, 18px); }
     .sis-top{ display:grid; grid-template-columns:1fr; gap:var(--gap); margin-bottom:clamp(10px, 1.4vw, 14px); }
-    .sis-hero{ position:relative; border-radius:calc(var(--radius) + 6px); overflow:hidden; background:#0b2a2a; min-height:190px; border:1px solid rgba(255,255,255,0.10); box-shadow:var(--shadow); }
+    .sis-hero{ position:relative; border-radius:calc(var(--radius) + 6px); overflow:hidden; background:#0b2a2a; min-height:280px; border:1px solid rgba(255,255,255,0.10); box-shadow:var(--shadow); }
     .sis-hero img:not(.sis-hero-logo){ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transform:scale(1.02); filter:saturate(1.02) contrast(1.03); }
     .sis-hero::after{ content:""; position:absolute; inset:0; background:linear-gradient(90deg, rgba(15,58,58,0.92) 0%, rgba(15,58,58,0.58) 45%, rgba(15,58,58,0.18) 100%), linear-gradient(0deg, rgba(0,0,0,0.18), rgba(0,0,0,0.02)); pointer-events:none; }
-    .sis-hero-content{ position:relative; z-index:1; display:grid; align-content:end; gap:6px; padding:clamp(40px, 5vw, 56px) clamp(14px, 2vw, 20px) clamp(12px, 1.8vw, 18px); min-height:190px; }
+    .sis-hero-content{ position:relative; z-index:1; display:grid; align-content:end; gap:6px; padding:clamp(40px, 5vw, 56px) clamp(14px, 2vw, 20px) clamp(12px, 1.8vw, 18px); min-height:280px; }
     .sis-brand{ display:grid; gap:6px; max-width:min(700px, 100%); }
     .sis-brand h1{ margin:0; font-weight:700; color:#fff; font-size:clamp(19px, 2.4vw, 26px); line-height:1.15; }
     .sis-brand p{ margin:0; color:rgba(255,255,255,0.85); font-size:13px; line-height:1.4; max-width:62ch; }

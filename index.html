@@ -39,6 +39,10 @@
     .sis-booking-widget{ flex:1 0 auto; }
     .footer{ flex-shrink:0; }
 
+    /* ── Embed mode (?embed=1): used when loaded inside an iframe, e.g. on the WP site ── */
+    body.is-embed{ background:transparent; min-height:0; }
+    body.is-embed .footer{ display:none; }
+
     /* ── Site header (overlaid on hero) ── */
     .header {
       max-width: 1180px;
@@ -136,6 +140,11 @@
   </style>
 </head>
 <body>
+  <script>
+    if (new URLSearchParams(location.search).get('embed') === '1') {
+      document.body.classList.add('is-embed');
+    }
+  </script>
 
   <div class="header">
     <div class="logo-mark"><img src="https://rentacatamaran.net/wp-content/uploads/2020/10/SIS_logo_wit.png" alt="Sail in Spain"></div>

@@ -545,13 +545,15 @@
     }
 
     function validateForm(){ const step1 = validateStep1(); if (!step1.ok) return step1; const step2 = validateStep2(); if (!step2.ok) return step2; return { ok:true }; }
-    function setStep(step){
+    function setStep(step, options = {}){
       currentStep = step;
       document.querySelectorAll(".sis-step").forEach((section) => section.classList.toggle("active", Number(section.dataset.step) === step));
       document.querySelectorAll(".sis-step-chip").forEach((chip) => { const chipStep = Number(chip.dataset.stepChip); chip.classList.toggle("active", chipStep === step); chip.classList.toggle("done", chipStep < step); });
       if (step === 3) renderReview();
-      const card = document.querySelector(".sis-card");
-      if (card) card.scrollIntoView({ behavior:"smooth", block:"start" });
+      if (!options.skipScroll){
+        const card = document.querySelector(".sis-card");
+        if (card) card.scrollIntoView({ behavior:"smooth", block:"start" });
+      }
     }
 
     function buildPayload(){
@@ -659,7 +661,7 @@
       syncDatesForCharter();
       renderSummary();
       renderReview();
-      setStep(1);
+      setStep(1, { skipScroll:true });
     })();
   </script>
 </body>

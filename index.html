@@ -560,27 +560,51 @@
       const pricing = computePricing();
       const fullName = `${firstName.value.trim()} ${surname.value.trim()}`.trim();
       const notesValue = (notes.value || "").trim();
-      const reviewNote = pricing.requiresManualReview
-        ? ` [Manual review required — contact ${MANUAL_REVIEW_EMAIL}]`
-        : "";
+      const datesValue = startDate.value ? `${startDate.value} → ${endDate.value || startDate.value}` : "—";
+      const formData = new FormData();
 
-      return {
-        name:       fullName,
-        email:      email.value.trim(),
-        phone:      phone.value.trim(),
-        port:       departurePort.value,
-        tripType:   getCharterLabel(charterType.value),
-        trip:       getCharterLabel(charterType.value),
-        guests:     persons.value,
-        dateFrom:   startDate.value,
-        dateTo:     endDate.value || startDate.value,
-        base:       pricing.basePrice,
-        crew:       pricing.extrasCrew,
-        fuel:       pricing.extrasFuel,
-        total:      pricing.totalPrice,
-        notes:      (pricing.seasonName + ' — ' + notesValue + reviewNote).trim(),
-        additional: notesValue
+      const payload = {
+        booking_source: "SailInSpain Booking Widget",
+        booking_type: "Charter reservation request",
+        contact_full_name: fullName,
+        contact_first_name: firstName.value.trim(),
+        contact_last_name: surname.value.trim(),
+        contact_email: email.value.trim(),
+        contact_phone: phone.value.trim(),
+        trip_charter_type: getCharterLabel(charterType.value),
+        trip_charter_code: charterType.value,
+        trip_departure_port: departurePort.value,
+        trip_number_of_persons: String(Number(persons.value || 0)),
+        trip_start_date: startDate.value,
+        trip_end_date: endDate.value,
+        trip_dates_display: datesValue,
+        pricing_season_name: pricing.seasonName,
+        pricing_day_rate_eur: String(pricing.dayRate),
+        pricing_base_price_eur: String(pricing.basePrice),
+        pricing_fuel_eur: String(pricing.extrasFuel),
+        pricing_crew_eur: String(pricing.extrasCrew),
+        pricing_total_eur: String(pricing.totalPrice),
+        customer_notes: notesValue || "",
+        requires_manual_review: pricing.requiresManualReview ? "yes" : "no",
+        manual_review_email: pricing.requiresManualReview ? MANUAL_REVIEW_EMAIL : "",
+        success_message: "Your request has been received successfully.",
+        booking_summary_name: fullName,
+        booking_summary_email: email.value.trim(),
+        booking_summary_phone: phone.value.trim(),
+        booking_summary_charter: getCharterLabel(charterType.value),
+        booking_summary_departure: departurePort.value,
+        booking_summary_guests: String(Number(persons.value || 0)),
+        booking_summary_dates: datesValue,
+        booking_summary_season: pricing.seasonName,
+        booking_summary_base_price: euro(pricing.basePrice),
+        booking_summary_fuel: euro(pricing.extrasFuel),
+        booking_summary_crew: euro(pricing.extrasCrew),
+        booking_summary_total: euro(pricing.totalPrice),
+        booking_summary_notes: notesValue || ""
       };
+
+      Object.entries(payload).forEach(([key, value]) => formData.append(key, value == null ? "" : String(value)));
+      return formData;
     }
 
     function resetFlow(options = {}){
@@ -609,10 +633,9 @@
       clearMessages();
       const validation = validateForm();
       if (!validation.ok){ showAlert(validation.message); if (!validateStep1().ok) setStep(1); else setStep(2); return; }
-      const payload = buildPayload();
+      const body = buildPayload();
       submitBtn.disabled = true; submitBtn.textContent = "Sending…";
       try{
-        const body = JSON.stringify(payload);
         await Promise.all([
           fetch(ZAPIER_WEBHOOK_URL_1, { method: 'POST', mode: 'no-cors', body }),
           fetch(ZAPIER_WEBHOOK_URL_2, { method: 'POST', mode: 'no-cors', body })

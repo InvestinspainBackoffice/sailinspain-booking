@@ -298,8 +298,6 @@
   </div>
 
   <script>
-    // Google Apps Script backend (same spreadsheet as before)
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyL6zkSubGeKpEsVlZAdVWbBg_RePKGggPj7US-ZjQ0whUelexHXhnGNEsxS871vjIV/exec';
     // Same Zapier hooks used by the live rentacatamaran.net widget (e.g. Salesforce lead sync)
     const ZAPIER_WEBHOOK_URL_1 = "https://hooks.zapier.com/hooks/catch/8344712/uxybhbz/";
     const ZAPIER_WEBHOOK_URL_2 = "https://hooks.zapier.com/hooks/catch/8344712/ujoprwv/";
@@ -616,12 +614,6 @@
       try{
         const body = JSON.stringify(payload);
         await Promise.all([
-          fetch(SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body
-          }),
           fetch(ZAPIER_WEBHOOK_URL_1, { method: 'POST', mode: 'no-cors', body }),
           fetch(ZAPIER_WEBHOOK_URL_2, { method: 'POST', mode: 'no-cors', body })
         ]);

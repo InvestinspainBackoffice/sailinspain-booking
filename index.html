@@ -311,6 +311,81 @@
     const ZAPIER_WEBHOOK_URL_2 = "https://hooks.zapier.com/hooks/catch/8344712/ujoprwv/";
     const MANUAL_REVIEW_EMAIL = "alegria@sailinspain.be";
 
+    // Live availability source: "SIS Bookings" Google Sheet, synced from the Zapier "SIS table"
+    // via a Zap (New/Updated Record -> Create Spreadsheet Row), published to the web as CSV.
+    const AVAILABILITY_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQFnLl8WRgif5YbBBhCrGUJ2Lt0ikM1W_FTux-fmdi1EJ7BRgQP7ghbV7CZ5fLi2irvkc5Lw6-QIhSl/pub?gid=0&single=true&output=csv";
+
+    let availabilityData = null;
+    let availabilityFetchPromise = null;
+
+    function parseCSVLine(line){
+      const result = [];
+      let cur = "";
+      let inQuotes = false;
+      for (let i = 0; i < line.length; i++){
+        const c = line[i];
+        if (inQuotes){
+          if (c === '"'){
+            if (line[i + 1] === '"'){ cur += '"'; i++; } else { inQuotes = false; }
+          } else { cur += c; }
+        } else if (c === '"'){
+          inQuotes = true;
+        } else if (c === ","){
+          result.push(cur); cur = "";
+        } else {
+          cur += c;
+        }
+      }
+      result.push(cur);
+      return result;
+    }
+
+    function parseAvailabilityCSV(text){
+      const lines = text.split(/\r\n|\n/).filter((l) => l.length > 0);
+      if (!lines.length) return [];
+      const headers = parseCSVLine(lines[0]).map((h) => h.trim());
+      const idx = {};
+      headers.forEach((h, i) => { idx[h] = i; });
+      const rows = [];
+      for (let i = 1; i < lines.length; i++){
+        const cols = parseCSVLine(lines[i]);
+        const checkInRaw = (cols[idx["Check-in Date"]] || "").trim();
+        const checkOutRaw = (cols[idx["Check-out Date"]] || "").trim();
+        const location = (cols[idx["Location"]] || "").trim();
+        const status = (cols[idx["Status"]] || "").trim();
+        if (!checkInRaw || !checkOutRaw) continue;
+        rows.push({
+          location,
+          status,
+          checkIn: checkInRaw.slice(0, 10),
+          checkOut: checkOutRaw.slice(0, 10)
+        });
+      }
+      return rows;
+    }
+
+    function loadAvailability(){
+      if (availabilityFetchPromise) return availabilityFetchPromise;
+      availabilityFetchPromise = fetch(AVAILABILITY_CSV_URL, { cache: "no-store" })
+        .then((res) => res.text())
+        .then((text) => { availabilityData = parseAvailabilityCSV(text); return availabilityData; })
+        .catch((err) => { console.error("Availability fetch failed:", err); availabilityData = []; return availabilityData; });
+      return availabilityFetchPromise;
+    }
+
+    function isDateRangeBooked(port, startISO, endISO){
+      if (!availabilityData || !port || !startISO) return false;
+      const end = endISO || startISO;
+      for (const row of availabilityData){
+        if (row.status.toLowerCase() !== "confirmed") continue;
+        if (row.location !== port) continue;
+        const rStart = row.checkIn < row.checkOut ? row.checkIn : row.checkOut;
+        const rEnd = row.checkIn < row.checkOut ? row.checkOut : row.checkIn;
+        if (rStart <= end && startISO <= rEnd) return true;
+      }
+      return false;
+    }
+
     const HERO_IMAGES = [
       "https://rentacatamaran.net/wp-content/uploads/2020/10/Lagoon-46-catamaran-for-rent-sotogrande-estepona-marbella-1.jpeg",
       "https://rentacatamaran.net/wp-content/uploads/2020/10/Sailinspain-marbella-estepona-sotogrande-catamaran-for-rent-with-captain.jpg",
@@ -533,6 +608,7 @@
       if (!eDate) return { ok:false, message:"Please choose a valid end date." };
       if (eDate < sDate) return { ok:false, message:"End date must be the same as or after the start date." };
       if (!pricing.ruleFlags.capacityOk) return { ok:false, message:`This charter cannot be requested for ${persons.value} guests. Max ${pricing.maxCapacity}.` };
+      if (isDateRangeBooked(departurePort.value, startDate.value, endDate.value)) return { ok:false, message:`This period is already booked for ${departurePort.value}. Please choose different dates.` };
       return { ok:true };
     }
 
@@ -620,7 +696,14 @@
       setStep(1);
     }
 
-    [charterType, departurePort, persons, startDate].forEach((el) => el.addEventListener("change", () => { syncDatesForCharter(); renderSummary(); renderReview(); }));
+    function checkAvailabilityAndWarn(){
+      if (!startDate.value || !availabilityData) return;
+      if (isDateRangeBooked(departurePort.value, startDate.value, endDate.value)){
+        showAlert(`This period is already booked for ${departurePort.value}. Please choose different dates.`);
+      }
+    }
+
+    [charterType, departurePort, persons, startDate].forEach((el) => el.addEventListener("change", () => { syncDatesForCharter(); renderSummary(); renderReview(); checkAvailabilityAndWarn(); }));
     [firstName, surname, email, phone, notes].forEach((el) => el.addEventListener("input", renderReview));
     toStep2Btn.addEventListener("click", () => { const validation = validateStep1(); if (!validation.ok) return showAlert(validation.message); setStep(2); });
     toStep3Btn.addEventListener("click", () => { const validation = validateStep2(); if (!validation.ok) return showAlert(validation.message); renderReview(); setStep(3); });
@@ -662,6 +745,7 @@
       renderSummary();
       renderReview();
       setStep(1, { skipScroll:true });
+      loadAvailability().then(() => checkAvailabilityAndWarn());
     })();
   </script>
 </body>

@@ -700,6 +700,8 @@
       if (!startDate.value || !availabilityData) return;
       if (isDateRangeBooked(departurePort.value, startDate.value, endDate.value)){
         showAlert(`This period is already booked for ${departurePort.value}. Please choose different dates.`);
+      } else if (!alertBox.hidden){
+        clearMessages();
       }
     }
 

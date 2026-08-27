@@ -108,7 +108,7 @@
     .sis-date-input:focus-visible{ outline:none; border-color:rgba(201,162,74,0.75); box-shadow:var(--focus); }
     .sis-date-input svg{ color:var(--muted); flex-shrink:0; }
     .sis-date-input.placeholder span{ color:rgba(24,32,32,0.4); }
-    .sis-calendar{ position:absolute; z-index:20; top:calc(100% + 6px); left:0; width:280px; max-width:calc(100vw - 40px); background:#fff; border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); padding:12px; }
+    .sis-calendar{ position:fixed; z-index:1000; width:280px; max-width:calc(100vw - 40px); background:#fff; border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); padding:12px; }
     .sis-calendar-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
     .sis-cal-month{ font-weight:700; font-size:13px; color:var(--brand-deep); }
     .sis-cal-nav{ width:28px; height:28px; font-size:15px; border-radius:8px; border:1px solid rgba(15,58,58,0.16); background:#fff; color:var(--brand-deep); display:grid; place-items:center; cursor:pointer; }
@@ -633,17 +633,30 @@
       if (!startDateCalendar.hidden) renderCalendarGrid();
     }
 
+    function positionCalendar(){
+      const rect = startDateBtn.getBoundingClientRect();
+      const width = startDateCalendar.offsetWidth || 280;
+      let left = rect.left;
+      if (left + width > window.innerWidth - 12) left = Math.max(12, window.innerWidth - width - 12);
+      startDateCalendar.style.left = `${left}px`;
+      startDateCalendar.style.top = `${rect.bottom + 6}px`;
+    }
+
     function openCalendar(){
       calViewYear = null; calViewMonth = null;
       renderCalendarGrid();
       startDateCalendar.hidden = false;
       startDateBtn.setAttribute("aria-expanded", "true");
+      positionCalendar();
     }
 
     function closeCalendar(){
       startDateCalendar.hidden = true;
       startDateBtn.setAttribute("aria-expanded", "false");
     }
+
+    window.addEventListener("scroll", () => { if (!startDateCalendar.hidden) positionCalendar(); }, true);
+    window.addEventListener("resize", () => { if (!startDateCalendar.hidden) positionCalendar(); });
 
     startDateBtn.addEventListener("click", (e) => {
       e.stopPropagation();

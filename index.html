@@ -373,12 +373,13 @@
       return availabilityFetchPromise;
     }
 
-    function isDateRangeBooked(port, startISO, endISO){
-      if (!availabilityData || !port || !startISO) return false;
+    // Only one boat exists — departure port is just where it sets off from, not a separate
+    // resource, so a Confirmed booking blocks a date regardless of port.
+    function isDateRangeBooked(startISO, endISO){
+      if (!availabilityData || !startISO) return false;
       const end = endISO || startISO;
       for (const row of availabilityData){
         if (row.status.toLowerCase() !== "confirmed") continue;
-        if (row.location !== port) continue;
         const rStart = row.checkIn < row.checkOut ? row.checkIn : row.checkOut;
         const rEnd = row.checkIn < row.checkOut ? row.checkOut : row.checkIn;
         if (rStart <= end && startISO <= rEnd) return true;
@@ -608,7 +609,7 @@
       if (!eDate) return { ok:false, message:"Please choose a valid end date." };
       if (eDate < sDate) return { ok:false, message:"End date must be the same as or after the start date." };
       if (!pricing.ruleFlags.capacityOk) return { ok:false, message:`This charter cannot be requested for ${persons.value} guests. Max ${pricing.maxCapacity}.` };
-      if (isDateRangeBooked(departurePort.value, startDate.value, endDate.value)) return { ok:false, message:`This period is already booked for ${departurePort.value}. Please choose different dates.` };
+      if (isDateRangeBooked(startDate.value, endDate.value)) return { ok:false, message:"The boat is already booked for these dates. Please choose a different period." };
       return { ok:true };
     }
 
@@ -698,8 +699,8 @@
 
     function checkAvailabilityAndWarn(){
       if (!startDate.value || !availabilityData) return;
-      if (isDateRangeBooked(departurePort.value, startDate.value, endDate.value)){
-        showAlert(`This period is already booked for ${departurePort.value}. Please choose different dates.`);
+      if (isDateRangeBooked(startDate.value, endDate.value)){
+        showAlert("The boat is already booked for these dates. Please choose a different period.");
       } else if (!alertBox.hidden){
         clearMessages();
       }

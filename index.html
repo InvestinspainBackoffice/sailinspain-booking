@@ -100,6 +100,37 @@
     textarea{ min-height:64px; resize:vertical; }
     input:focus, select:focus, textarea:focus{ outline:none; border-color:rgba(201,162,74,0.75); box-shadow:var(--focus); }
     input[readonly]{ background:rgba(15,58,58,0.03); color:rgba(24,32,32,0.85); cursor:not-allowed; }
+
+    /* ── Custom date picker (shows booked days) ── */
+    .sis-date-field{ position:relative; }
+    .sis-date-input{ width:100%; display:flex; align-items:center; justify-content:space-between; gap:8px; padding:9px 10px; border-radius:var(--radius-sm); border:1px solid rgba(15,58,58,0.18); background:#fff; color:var(--text); font-size:13px; font-family:inherit; cursor:pointer; text-align:left; }
+    .sis-date-input:hover{ border-color:rgba(201,162,74,0.55); }
+    .sis-date-input:focus-visible{ outline:none; border-color:rgba(201,162,74,0.75); box-shadow:var(--focus); }
+    .sis-date-input svg{ color:var(--muted); flex-shrink:0; }
+    .sis-date-input.placeholder span{ color:rgba(24,32,32,0.4); }
+    .sis-calendar{ position:absolute; z-index:20; top:calc(100% + 6px); left:0; width:280px; max-width:calc(100vw - 40px); background:#fff; border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); padding:12px; }
+    .sis-calendar-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+    .sis-cal-month{ font-weight:700; font-size:13px; color:var(--brand-deep); }
+    .sis-cal-nav{ width:28px; height:28px; font-size:15px; border-radius:8px; border:1px solid rgba(15,58,58,0.16); background:#fff; color:var(--brand-deep); display:grid; place-items:center; cursor:pointer; }
+    .sis-cal-nav:hover{ background:rgba(15,58,58,0.05); }
+    .sis-cal-nav:disabled{ opacity:0.35; cursor:not-allowed; }
+    .sis-calendar-weekdays{ display:grid; grid-template-columns:repeat(7, 1fr); gap:2px; margin-bottom:2px; }
+    .sis-calendar-weekdays span{ font-size:10px; font-weight:700; color:var(--muted); text-align:center; padding:4px 0; }
+    .sis-calendar-grid{ display:grid; grid-template-columns:repeat(7, 1fr); gap:2px; }
+    .sis-cal-day{ position:relative; height:32px; border:none; background:transparent; border-radius:8px; font-size:12px; color:var(--text); cursor:pointer; font-family:inherit; }
+    .sis-cal-day:hover:not(:disabled){ background:rgba(201,162,74,0.16); }
+    .sis-cal-day:disabled{ color:rgba(24,32,32,0.28); cursor:not-allowed; }
+    .sis-cal-day.is-empty{ visibility:hidden; cursor:default; }
+    .sis-cal-day.is-booked{ color:#b45151; text-decoration:line-through; cursor:not-allowed; }
+    .sis-cal-day.is-booked:hover{ background:transparent; }
+    .sis-cal-day.is-today{ font-weight:700; box-shadow:inset 0 0 0 1px rgba(201,162,74,0.6); }
+    .sis-cal-day.is-selected{ background:var(--brand-gold); color:#102020; font-weight:700; }
+    .sis-cal-day.is-selected:hover{ background:var(--brand-gold); }
+    .sis-calendar-legend{ display:flex; gap:14px; margin-top:10px; padding-top:8px; border-top:1px solid var(--border); font-size:10px; color:var(--muted); }
+    .sis-calendar-legend span{ display:inline-flex; align-items:center; gap:5px; }
+    .sis-dot{ width:9px; height:9px; border-radius:999px; display:inline-block; }
+    .sis-dot-booked{ background:#e2b4b4; }
+    .sis-dot-selected{ background:var(--brand-gold); }
     .sis-alert, .sis-success{ padding:12px; border-radius:var(--radius-sm); font-size:13px; line-height:1.45; margin-top:14px; }
     .sis-alert{ border:1px solid rgba(160, 0, 0, 0.22); background:rgba(160, 0, 0, 0.06); color:#7b0f0f; }
     .sis-success{ border:1px solid rgba(0, 120, 60, 0.24); background:rgba(0, 120, 60, 0.07); color:#0a5b33; }
@@ -223,9 +254,27 @@
                   </select>
                   <div class="sis-hint" id="personsHint">Day trips: max 10. Multi-day: max 6 (incl. skipper &amp; crew (2)).</div>
                 </div>
-                <div>
-                  <label for="startDate">Start date</label>
-                  <input id="startDate" name="startDate" type="date" required>
+                <div class="sis-date-field">
+                  <label for="startDateBtn">Start date</label>
+                  <button type="button" class="sis-date-input" id="startDateBtn" aria-haspopup="dialog" aria-expanded="false">
+                    <span id="startDateBtnText">dd-mm-yyyy</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M3 9.5H21" stroke="currentColor" stroke-width="1.6"/><path d="M8 3V6.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M16 3V6.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+                  </button>
+                  <input id="startDate" name="startDate" type="hidden" required>
+                  <div class="sis-calendar" id="startDateCalendar" hidden>
+                    <div class="sis-calendar-head">
+                      <button type="button" class="sis-icon-btn sis-cal-nav" id="calPrev" aria-label="Previous month">‹</button>
+                      <span id="calMonthLabel" class="sis-cal-month"></span>
+                      <button type="button" class="sis-icon-btn sis-cal-nav" id="calNext" aria-label="Next month">›</button>
+                    </div>
+                    <div class="sis-calendar-weekdays" id="calWeekdays"></div>
+                    <div class="sis-calendar-grid" id="calGrid"></div>
+                    <div class="sis-calendar-legend">
+                      <span><i class="sis-dot sis-dot-booked"></i> Booked</span>
+                      <span><i class="sis-dot sis-dot-selected"></i> Selected</span>
+                    </div>
+                  </div>
+                  <div class="sis-hint">Grey/struck-through dates are already booked.</div>
                 </div>
               </div>
               <div class="sis-grid two" style="margin-top:14px;">
@@ -420,6 +469,14 @@
     const persons = $("persons");
     const startDate = $("startDate");
     const endDate = $("endDate");
+    const startDateBtn = $("startDateBtn");
+    const startDateBtnText = $("startDateBtnText");
+    const startDateCalendar = $("startDateCalendar");
+    const calPrev = $("calPrev");
+    const calNext = $("calNext");
+    const calMonthLabel = $("calMonthLabel");
+    const calWeekdays = $("calWeekdays");
+    const calGrid = $("calGrid");
     const firstName = $("firstName");
     const surname = $("surname");
     const email = $("email");
@@ -475,6 +532,12 @@
     function getCharterLabel(value){ return (CHARTER_RULES[value] && CHARTER_RULES[value].label) || "—"; }
 
     function syncDatesForCharter(){
+      syncDatesForCharterCore();
+      updateStartDateButton();
+      refreshCalendarIfOpen();
+    }
+
+    function syncDatesForCharterCore(){
       const rule = getRule();
       const now = new Date();
       const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -503,6 +566,113 @@
       endDate.value = calculatedEnd;
       endDate.min = calculatedEnd;
     }
+
+    // ── Custom date picker ──
+    const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+    const WEEKDAY_LABELS = ["Mo","Tu","We","Th","Fr","Sa","Su"];
+    let calViewYear = null;
+    let calViewMonth = null;
+
+    function pad2(n){ return String(n).padStart(2, "0"); }
+    function formatDisplayDate(iso){ const [y, m, d] = iso.split("-"); return `${d}-${m}-${y}`; }
+    function todayISO(){ const now = new Date(); return toISODate(new Date(now.getFullYear(), now.getMonth(), now.getDate())); }
+
+    function updateStartDateButton(){
+      if (startDate.value){
+        startDateBtnText.textContent = formatDisplayDate(startDate.value);
+        startDateBtn.classList.remove("placeholder");
+      } else {
+        startDateBtnText.textContent = "dd-mm-yyyy";
+        startDateBtn.classList.add("placeholder");
+      }
+    }
+
+    function isStartDaySelectable(iso){
+      if (iso < todayISO()) return false;
+      const rule = getRule();
+      const start = parseISODate(iso);
+      if (!start) return false;
+      const end = toISODate(addDays(start, rule.durationDays - 1));
+      return !isDateRangeBooked(iso, end);
+    }
+
+    function renderCalendarGrid(){
+      if (calViewYear === null){
+        const base = startDate.value ? parseISODate(startDate.value) : new Date();
+        calViewYear = base.getFullYear();
+        calViewMonth = base.getMonth();
+      }
+      calMonthLabel.textContent = `${MONTH_NAMES[calViewMonth]} ${calViewYear}`;
+      calWeekdays.innerHTML = WEEKDAY_LABELS.map((w) => `<span>${w}</span>`).join("");
+
+      const firstOfMonth = new Date(calViewYear, calViewMonth, 1);
+      const offset = (firstOfMonth.getDay() + 6) % 7; // Monday-first offset
+      const daysInMonth = new Date(calViewYear, calViewMonth + 1, 0).getDate();
+      const today = todayISO();
+      const selected = startDate.value;
+
+      let html = "";
+      for (let i = 0; i < offset; i++){ html += `<button type="button" class="sis-cal-day is-empty" tabindex="-1"></button>`; }
+      for (let d = 1; d <= daysInMonth; d++){
+        const iso = `${calViewYear}-${pad2(calViewMonth + 1)}-${pad2(d)}`;
+        const selectable = isStartDaySelectable(iso);
+        const classes = ["sis-cal-day"];
+        if (!selectable) classes.push(iso < today ? "" : "is-booked");
+        if (iso === today) classes.push("is-today");
+        if (iso === selected) classes.push("is-selected");
+        html += `<button type="button" class="${classes.filter(Boolean).join(" ")}" data-date="${iso}" ${selectable ? "" : "disabled"}>${d}</button>`;
+      }
+      calGrid.innerHTML = html;
+
+      const minNavIso = `${todayISO().slice(0,4)}-${todayISO().slice(5,7)}`;
+      const viewIso = `${calViewYear}-${pad2(calViewMonth + 1)}`;
+      calPrev.disabled = viewIso <= minNavIso;
+    }
+
+    function refreshCalendarIfOpen(){
+      if (!startDateCalendar.hidden) renderCalendarGrid();
+    }
+
+    function openCalendar(){
+      calViewYear = null; calViewMonth = null;
+      renderCalendarGrid();
+      startDateCalendar.hidden = false;
+      startDateBtn.setAttribute("aria-expanded", "true");
+    }
+
+    function closeCalendar(){
+      startDateCalendar.hidden = true;
+      startDateBtn.setAttribute("aria-expanded", "false");
+    }
+
+    startDateBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (startDateCalendar.hidden) openCalendar(); else closeCalendar();
+    });
+
+    calPrev.addEventListener("click", () => {
+      calViewMonth--; if (calViewMonth < 0){ calViewMonth = 11; calViewYear--; }
+      renderCalendarGrid();
+    });
+    calNext.addEventListener("click", () => {
+      calViewMonth++; if (calViewMonth > 11){ calViewMonth = 0; calViewYear++; }
+      renderCalendarGrid();
+    });
+
+    calGrid.addEventListener("click", (e) => {
+      const btn = e.target.closest(".sis-cal-day[data-date]");
+      if (!btn || btn.disabled) return;
+      startDate.value = btn.dataset.date;
+      startDate.dispatchEvent(new Event("change", { bubbles:true }));
+      closeCalendar();
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!startDateCalendar.hidden && !startDateCalendar.contains(e.target) && e.target !== startDateBtn && !startDateBtn.contains(e.target)){
+        closeCalendar();
+      }
+    });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeCalendar(); });
 
     function computePricing(){
       const sDate = parseISODate(startDate.value);
@@ -748,7 +918,7 @@
       renderSummary();
       renderReview();
       setStep(1, { skipScroll:true });
-      loadAvailability().then(() => checkAvailabilityAndWarn());
+      loadAvailability().then(() => { checkAvailabilityAndWarn(); refreshCalendarIfOpen(); });
     })();
   </script>
 </body>

@@ -169,7 +169,6 @@
     /* ── Footer ── */
     .footer { background: var(--brand-deep); color: rgba(255,255,255,0.55); text-align: center; padding: 0.75rem; font-size: 11px; }
   </style>
-  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
 </head>
 <body>
   <script>
@@ -370,7 +369,15 @@
     let turnstileToken = "";
     function mountTurnstile(){
       if (!TURNSTILE_SITE_KEY || turnstileWidgetId !== null) return;
-      if (!window.turnstile) return setTimeout(mountTurnstile, 300);
+      if (!window.turnstile){
+        if (!document.getElementById("turnstileApi")){
+          const sc = document.createElement("script");
+          sc.id = "turnstileApi"; sc.async = true; sc.defer = true;
+          sc.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+          document.head.appendChild(sc);
+        }
+        return setTimeout(mountTurnstile, 300);
+      }
       turnstileWidgetId = window.turnstile.render("#turnstileBox", {
         sitekey: TURNSTILE_SITE_KEY,
         callback: (t) => { turnstileToken = t; },
